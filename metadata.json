@@ -1,0 +1,6 @@
+{
+  "name": "Lumina AI",
+  "description": "Lumina AI - AI Movie Maker & 9D Suite. 1 to 80 min AI movies with auto BGM orchestration, media generator, Gemini AI chat, prompt studio, and friends hub.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
