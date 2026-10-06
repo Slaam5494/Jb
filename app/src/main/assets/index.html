@@ -1,1 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LUMINA AI - AI MOVIE MAKER</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FIREBASE SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #010308;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* LOGIN SCREEN */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: radial-gradient(circle at center, #0a1930 0%, #010308 100%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .login-screen.hidden {
+            display: none !important;
+        }
+
+        .login-logo-box {
+            width: 80px;
+            height: 80px;
+            border-radius: 18px;
+            border: 2px solid #00f2fe;
+            box-shadow: 0 0 20px #00f2fe;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 242, 254, 0.1);
+            overflow: hidden;
+        }
+
+        .login-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .login-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #00f2fe;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00f2fe;
+            margin-bottom: 4px;
+        }
+
+        .login-subtitle {
+            font-size: 8.5px;
+            color: #8b949e;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 250px;
+            background: rgba(10, 25, 50, 0.7);
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .google-btn {
+            background: #ea4335;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(234, 67, 53, 0.4);
+        }
+
+        .guest-btn {
+            background: rgba(0, 242, 254, 0.15);
+            border: 1px solid #00f2fe;
+            color: #00f2fe;
+        }
+
+        /* DASHBOARD */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100vh;
+            padding: 8px;
+            gap: 6px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: rgba(1, 3, 8, 0.85);
+            border-bottom: 2px solid rgba(0, 242, 254, 0.4);
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-logo-img {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            border: 1px solid #00f2fe;
+            object-fit: cover;
+        }
+
+        .title {
+            font-size: 11px;
+            font-weight: 900;
+            color: #00f2fe;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px #00f2fe;
+        }
+
+        .title span {
+            color: #ff007f;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .coin-pill {
+            font-size: 8px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            padding: 3px 7px;
+            border-radius: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .buy-coin-btn {
+            font-size: 7.5px;
+            background: linear-gradient(90deg, #ff007f, #7928ca);
+            border: none;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(255,0,127,0.4);
+        }
+
+        /* AD SLOTS & TICKER */
+        .ad-slot-container {
+            width: 100%;
+            background: rgba(0, 242, 254, 0.03);
+            border: 1px dashed rgba(0, 242, 254, 0.4);
+            border-radius: 4px;
+            padding: 2px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .ad-label-tag {
+            font-size: 5px;
+            color: #8b949e;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .ad-banner-box {
+            width: 100%;
+            height: 28px;
+            background: rgba(10, 15, 30, 0.8);
+            border: 1px solid rgba(192, 92, 255, 0.3);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c05cff;
+            font-size: 7.5px;
+            font-weight: bold;
+        }
+
+        .ticker-bar {
+            width: 100%;
+            background: rgba(0, 242, 254, 0.05);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 4px;
+            padding: 3px 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .ticker-icon {
+            color: #00f2fe;
+            font-size: 9px;
+        }
+
+        .ticker-text {
+            font-size: 8px;
+            color: #a0aec0;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* GRID MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-height: 0;
+        }
+
+        .section-label {
+            font-size: 8.5px;
+            color: #00f2fe;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .grid-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .card {
+            position: relative;
+            background: rgba(10, 25, 50, 0.7);
+            border: 1px solid rgba(0, 242, 254, 0.35);
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .card-bg-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.25;
+            filter: contrast(110%) brightness(80%);
+            transition: transform 0.3s, opacity 0.3s;
+            z-index: 1;
+        }
+
+        .card:hover .card-bg-img {
+            transform: scale(1.08);
+            opacity: 0.4;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .card-icon {
+            font-size: 16px;
+            color: #00f2fe;
+            text-shadow: 0 0 6px #00f2fe;
+        }
+
+        .card-title {
+            font-size: 9.5px;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 3px;
+            text-shadow: 0 0 5px #000;
+        }
+
+        .card-desc {
+            font-size: 6.5px;
+            color: #d1d5db;
+            text-shadow: 0 0 3px #000;
+        }
+
+        /* NAV */
+        .bottom-nav {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2px;
+            background: rgba(1, 8, 20, 0.95);
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            border-radius: 6px;
+            padding: 5px 2px;
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 11px;
+            color: #00f2fe;
+            margin-bottom: 2px;
+        }
+
+        .nav-item span {
+            font-size: 5px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* MODULES */
+        .module-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(1, 3, 8, 0.92);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .module-screen.active {
+            display: flex !important;
+        }
+
+        .module-box {
+            width: 100%;
+            max-width: 420px;
+            height: 85vh;
+            background: #010308;
+            border: 1px solid #00f2fe;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.3);
+            overflow: hidden;
+        }
+
+        .mod-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(0, 242, 254, 0.4);
+            background: rgba(10, 25, 50, 0.9);
+        }
+
+        .back-btn {
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid #00f2fe;
+            color: #00f2fe;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 8px;
+        }
+
+        .page-title {
+            font-size: 10px;
+            font-weight: 900;
+            color: #00f2fe;
+        }
+
+        .mod-body {
+            width: 100%;
+            flex: 1;
+            background: #080d16;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            overflow-y: auto;
+            justify-content: flex-start;
+            gap: 8px;
+        }
+
+        /* FORM CONTROLS INSIDE MODULES */
+        label {
+            font-size: 7.5px;
+            color: #00f2fe;
+            margin-bottom: 2px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            background: rgba(10, 25, 50, 0.8);
+            color: #fff;
+            font-size: 8px;
+            margin-bottom: 6px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #ff007f;
+        }
+
+        .tab-btn-group {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .t-btn {
+            flex: 1;
+            padding: 6px;
+            background: #131f37;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 4px;
+            color: #00f2fe;
+            font-size: 7.5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .t-btn.active {
+            background: #00f2fe;
+            color: #000;
+        }
+
+        .gen-btn {
+            background: linear-gradient(90deg, #00f2fe, #ff007f);
+            border: none;
+            color: #fff;
+            padding: 9px;
+            border-radius: 6px;
+            font-size: 8.5px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+            width: 100%;
+        }
+
+        /* FRIENDS HUB MONETIZED STYLES */
+        .friends-tab-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .f-tab {
+            flex: 1;
+            padding: 5px;
+            background: #131f37;
+            border: 1px solid rgba(0,242,254,0.3);
+            border-radius: 4px;
+            font-size: 7.5px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .f-tab.active {
+            background: #25D366;
+            color: #000;
+            border-color: #25D366;
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(10,25,50,0.8);
+            border: 1px solid rgba(0,242,254,0.2);
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin-bottom: 6px;
+        }
+
+        .f-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid #25D366;
+            margin-right: 8px;
+        }
+
+        .f-info {
+            flex: 1;
+        }
+
+        .f-name {
+            font-size: 8.5px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .f-status {
+            font-size: 6.5px;
+            color: #25D366;
+        }
+
+        .f-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .f-btn {
+            background: #131f37;
+            border: 1px solid #00f2fe;
+            color: #00f2fe;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            cursor: pointer;
+        }
+
+        .f-btn-call {
+            border-color: #25D366;
+            color: #25D366;
+        }
+
+        .monetize-banner-box {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid #ffd700;
+            border-radius: 6px;
+            padding: 6px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .monetize-title {
+            font-size: 7.5px;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .monetize-btn {
+            background: linear-gradient(90deg, #ffd700, #ff8c00);
+            color: #000;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 7px;
+            font-weight: 900;
+            margin-top: 4px;
+            cursor: pointer;
+        }
+
+        .watch-ad-btn {
+            background: rgba(0,242,254,0.15);
+            border: 1px solid #00f2fe;
+            color: #00f2fe;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* STORE MODAL STYLES */
+        .store-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.85);
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .store-modal.active {
+            display: flex !important;
+        }
+
+        .store-box {
+            width: 100%;
+            max-width: 360px;
+            background: #080d16;
+            border: 1px solid #00f2fe;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 0 25px rgba(0,242,254,0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .store-title {
+            font-size: 12px;
+            font-weight: 900;
+            color: #ffd700;
+            text-align: center;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .package-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .pkg-card {
+            background: rgba(10, 25, 50, 0.8);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pkg-card:hover, .pkg-card.selected {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .pkg-name {
+            font-size: 9px;
+            font-weight: bold;
+            color: #00f2fe;
+        }
+
+        .pkg-desc {
+            font-size: 7px;
+            color: #a0aec0;
+        }
+
+        .pkg-price {
+            font-size: 10px;
+            font-weight: 900;
+            color: #ffd700;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .pay-btn {
+            background: #131f37;
+            border: 1px solid rgba(0,242,254,0.3);
+            border-radius: 6px;
+            padding: 6px 2px;
+            text-align: center;
+            font-size: 7px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .pay-btn.selected {
+            border-color: #25D366;
+            background: rgba(37, 211, 102, 0.2);
+        }
+
+        .checkout-btn {
+            background: linear-gradient(90deg, #25D366, #128C7E);
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 9px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .close-store-btn {
+            background: transparent;
+            border: 1px solid #ff4757;
+            color: #ff4757;
+            padding: 5px;
+            border-radius: 6px;
+            font-size: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN SCREEN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-logo-box">
+            <img src="logo.png" alt="Lumina Logo" class="login-logo-img">
+        </div>
+        <div class="login-title">LUMINA AI</div>
+        <div class="login-subtitle">AI MOVIE MAKER & 9D SUITE</div>
+        <div class="login-box">
+            <button class="login-btn google-btn" onclick="LuminaApp.loginWithGoogle()"><i class="fa-brands fa-google"></i> LOGIN WITH GMAIL</button>
+            <button class="login-btn guest-btn" onclick="LuminaApp.loginAsGuest()"><i class="fa-solid fa-user-secret"></i> CONTINUE AS GUEST</button>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="app-container">
+        <div class="header">
+            <div class="logo-area">
+                <img src="logo.png" alt="Lumina Logo" class="header-logo-img">
+                <div class="title">LUMINA AI <span>MOVIE MAKER</span></div>
+            </div>
+            <div class="header-right">
+                <div class="coin-pill"><i class="fa-solid fa-coins"></i> <span id="userCoinBalance">0.0</span></div>
+                <button class="buy-coin-btn" onclick="LuminaApp.openCoinStore()"><i class="fa-solid fa-plus"></i> BUY COINS</button>
+            </div>
+        </div>
+
+        <div class="ad-slot-container">
+            <div class="ad-label-tag">--- ADVERTISEMENT SLOT ---</div>
+            <div class="ad-banner-box">[ TOP AD BANNER ]</div>
+        </div>
+
+        <div class="ticker-bar">
+            <i class="fa-solid fa-bullhorn ticker-icon"></i>
+            <div class="ticker-text">
+                <marquee scrollamount="4">Welcome to LUMINA AI Movie Maker • 1 min to 80 min AI Movies & BGM Auto-Orchestration Available...</marquee>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-label">SYSTEM MODULES</div>
+            <div class="grid-container">
+                <div class="card" onclick="LuminaApp.openModule('movieMod')">
+                    <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=400&q=80" class="card-bg-img" alt="Movie Maker">
+                    <div class="card-content">
+                        <i class="fa-solid fa-film card-icon" style="color: #ff007f;"></i>
+                        <div><div class="card-title">MOVIE MAKER</div><div class="card-desc">1 to 80 Min AI Movies & BGM</div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="LuminaApp.openModule('mediaMod')">
+                    <img src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=400&q=80" class="card-bg-img" alt="Video">
+                    <div class="card-content">
+                        <i class="fa-solid fa-photo-film card-icon"></i>
+                        <div><div class="card-title">MEDIA GEN</div><div class="card-desc">Video & Image Generator</div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="LuminaApp.openModule('chatMod')">
+                    <img src="https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=400&q=80" class="card-bg-img" alt="Chat">
+                    <div class="card-content">
+                        <i class="fa-solid fa-robot card-icon"></i>
+                        <div><div class="card-title">AI CHAT</div><div class="card-desc">Gemini Copy Interface</div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="LuminaApp.openModule('promptMod')">
+                    <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=400&q=80" class="card-bg-img" alt="Prompt">
+                    <div class="card-content">
+                        <i class="fa-solid fa-wand-magic-sparkles card-icon" style="color: #c05cff;"></i>
+                        <div><div class="card-title">PROMPT STUDIO</div><div class="card-desc">Gemini Prompt Bar</div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="LuminaApp.openModule('friendsMod')">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80" class="card-bg-img" alt="Friends">
+                    <div class="card-content">
+                        <i class="fa-solid fa-users card-icon" style="color: #25D366;"></i>
+                        <div><div class="card-title">FRIENDS HUB</div><div class="card-desc">WhatsApp & Calling (Monetized)</div></div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="LuminaApp.openModule('settingsMod')">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80" class="card-bg-img" alt="Settings">
+                    <div class="card-content">
+                        <i class="fa-solid fa-gear card-icon"></i>
+                        <div><div class="card-title">SETTINGS</div><div class="card-desc">App Feedback & WhatsApp</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ad-slot-container">
+            <div class="ad-label-tag">--- ADVERTISEMENT SLOT ---</div>
+            <div class="ad-banner-box">[ BOTTOM AD BANNER ]</div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="LuminaApp.openModule('movieMod')"><i class="fa-solid fa-film" style="color:#ff007f;"></i><span>MOVIE</span></div>
+            <div class="nav-item" onclick="LuminaApp.openModule('mediaMod')"><i class="fa-solid fa-photo-film"></i><span>MEDIA</span></div>
+            <div class="nav-item" onclick="LuminaApp.openModule('chatMod')"><i class="fa-solid fa-robot"></i><span>AI CHAT</span></div>
+            <div class="nav-item" onclick="LuminaApp.openModule('promptMod')"><i class="fa-solid fa-wand-magic-sparkles"></i><span>PROMPT</span></div>
+            <div class="nav-item" onclick="LuminaApp.openModule('friendsMod')"><i class="fa-solid fa-users" style="color:#25D366;"></i><span>FRIENDS</span></div>
+            <div class="nav-item" onclick="LuminaApp.openModule('settingsMod')"><i class="fa-solid fa-gear"></i><span>SETTING</span></div>
+        </div>
+    </div>
+
+    <!-- MODULE 1: 9D MOVIE MAKER -->
+    <div id="movieMod" class="module-screen">
+        <div class="module-box">
+            <div class="mod-header">
+                <button class="back-btn" onclick="LuminaApp.closeModule('movieMod')"><i class="fa-solid fa-arrow-left"></i> BACK</button>
+                <div class="page-title" style="color:#ff007f;">9D MOVIE MAKER</div>
+            </div>
+            <div class="mod-body">
+                <label for="moviePromptText">Movie Storyline Script:</label>
+                <textarea id="moviePromptText" rows="3" placeholder="Describe storyline (e.g., A sci-fi action space battle with emotional scenes)..."></textarea>
+                
+                <label for="movieDurationSel">Select Duration:</label>
+                <select id="movieDurationSel">
+                    <option value="1">1 Minute (TikTok / Shorts)</option>
+                    <option value="5">5 Minutes (Short Scene)</option>
+                    <option value="15">15 Minutes (Episode Clip)</option>
+                    <option value="30">30 Minutes (Short Drama)</option>
+                    <option value="80">80 Minutes (Full Feature Movie - 1hr 20min)</option>
+                </select>
+
+                <label for="movieBgmSel">Auto Background Music (Equalizer):</label>
+                <select id="movieBgmSel">
+                    <option value="auto">Auto (AI Detects Scene Mood)</option>
+                    <option value="classic">Classic / Orchestral</option>
+                    <option value="cinematic">Cinematic Action BGM</option>
+                    <option value="jazz">Jazz / Smooth</option>
+                    <option value="rock">Rock / High Energy</option>
+                </select>
+
+                <button class="gen-btn" onclick="LuminaApp.buildMovieProject()">🎬 BUILD AI MOVIE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 2: MERGED MEDIA GEN -->
+    <div id="mediaMod" class="module-screen">
+        <div class="module-box">
+            <div class="mod-header">
+                <button class="back-btn" onclick="LuminaApp.closeModule('mediaMod')"><i class="fa-solid fa-arrow-left"></i> BACK</button>
+                <div class="page-title">MEDIA GENERATOR</div>
+            </div>
+            <div class="mod-body">
+                <div class="tab-btn-group">
+                    <div class="t-btn active" id="btnVidTab" onclick="LuminaApp.switchMediaMode('video')">📹 VIDEO GEN</div>
+                    <div class="t-btn" id="btnImgTab" onclick="LuminaApp.switchMediaMode('image')">🖼️ IMAGE GEN</div>
+                </div>
+                <label for="mediaPromptText">Media Prompt:</label>
+                <textarea id="mediaPromptText" rows="3" placeholder="Type prompt for video or image generation..."></textarea>
+                <button class="gen-btn" onclick="LuminaApp.generateMediaContent()">✨ GENERATE MEDIA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODULE 5: FRIENDS HUB -->
+    <div id="friendsMod" class="module-screen">
+        <div class="module-box">
+            <div class="mod-header">
+                <button class="back-btn" onclick="LuminaApp.closeModule('friendsMod')"><i class="fa-solid fa-arrow-left"></i> BACK</button>
+                <div class="page-title" style="color:#25D366;">FRIENDS HUB</div>
+            </div>
+            <div class="mod-body">
+                <div class="friends-tab-bar">
+                    <div class="f-tab active"><i class="fa-solid fa-comments"></i> CHATS</div>
+                    <div class="f-tab" onclick="LuminaApp.triggerStatusSaverAd()"><i class="fa-solid fa-circle-notch"></i> STATUS SAVER</div>
+                    <div class="f-tab" onclick="LuminaApp.openCoinStore()"><i class="fa-solid fa-gem"></i> VIP THEMES</div>
+                </div>
+
+                <div class="monetize-banner-box">
+                    <div class="monetize-title">💎 UNLIMITED 9D HD CALLS & PRIVATE CHATS</div>
+                    <button class="monetize-btn" onclick="LuminaApp.openCoinStore()">UNLOCK VIP MEMBER (Rs. 100)</button>
+                </div>
+
+                <div style="flex:1; overflow-y:auto;">
+                    <div class="friend-item">
+                        <img src="https://via.placeholder.com/30/25D366/fff?text=AI" class="f-avatar" alt="AI">
+                        <div class="f-info">
+                            <div class="f-name">Lumina AI Companion</div>
+                            <div class="f-status">Online • Always Active</div>
+                        </div>
+                        <div class="f-actions">
+                            <div class="f-btn" onclick="LuminaApp.openModule('chatMod')"><i class="fa-solid fa-comment"></i></div>
+                            <div class="f-btn f-btn-call" onclick="LuminaApp.startMonetizedCall('AI Companion', 0)"><i class="fa-solid fa-phone"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="friend-item">
+                        <img src="https://via.placeholder.com/30/00f2fe/fff?text=U1" class="f-avatar" alt="User">
+                        <div class="f-info">
+                            <div class="f-name">Alex (VIP Member)</div>
+                            <div class="f-status">Last seen 5 mins ago</div>
+                        </div>
+                        <div class="f-actions">
+                            <div class="f-btn" onclick="LuminaApp.openModule('chatMod')"><i class="fa-solid fa-comment"></i></div>
+                            <div class="f-btn f-btn-call" onclick="LuminaApp.startMonetizedCall('Alex', 0)"><i class="fa-solid fa-phone"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="watch-ad-btn" style="margin-top:6px;" onclick="LuminaApp.watchAdForCoin()">
+                    <i class="fa-solid fa-circle-play"></i> Watch Ad to Earn Call Balance
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COIN STORE MODAL POPUP -->
+    <div class="store-modal" id="coinStoreModal">
+        <div class="store-box">
+            <div class="store-title"><i class="fa-solid fa-gem"></i> LUMINA COIN STORE</div>
+            <p style="font-size:7.5px; color:#8b949e; text-align:center;">Select package & payment option to upgrade your AI generation capacity.</p>
+            
+            <div class="package-list">
+                <div class="pkg-card selected" onclick="LuminaApp.selectPackage(this, 'Daily Economy', 100, 10)">
+                    <div>
+                        <div class="pkg-name">DAILY ECONOMY</div>
+                        <div class="pkg-desc">10 Coins (50 Sec Video / Calls) • 24 Hours</div>
+                    </div>
+                    <div class="pkg-price">Rs. 100</div>
+                </div>
+
+                <div class="pkg-card" onclick="LuminaApp.selectPackage(this, 'Weekly Economy', 450, 50)">
+                    <div>
+                        <div class="pkg-name">WEEKLY ECONOMY</div>
+                        <div class="pkg-desc">50 Coins (~4 Min Video) • 7 Days</div>
+                    </div>
+                    <div class="pkg-price">Rs. 450</div>
+                </div>
+
+                <div class="pkg-card" onclick="LuminaApp.selectPackage(this, 'Monthly Standard', 1800, 250)">
+                    <div>
+                        <div class="pkg-name">MONTHLY STANDARD</div>
+                        <div class="pkg-desc">250 Coins (~20 Min Video) • 30 Days</div>
+                    </div>
+                    <div class="pkg-price">Rs. 1,800</div>
+                </div>
+
+                <div class="pkg-card" onclick="LuminaApp.selectPackage(this, 'Monthly Pro', 4000, 600)">
+                    <div>
+                        <div class="pkg-name">MONTHLY PRO</div>
+                        <div class="pkg-desc">600 Coins (~50 Min Video) • 30 Days</div>
+                    </div>
+                    <div class="pkg-price">Rs. 4,000</div>
+                </div>
+            </div>
+
+            <div style="font-size: 8px; font-weight: bold; color:#00f2fe; margin-top: 4px;">SELECT PAYMENT METHOD:</div>
+            <div class="payment-methods">
+                <div class="pay-btn selected" onclick="LuminaApp.selectPayment(this, 'EasyPaisa')">EasyPaisa</div>
+                <div class="pay-btn" onclick="LuminaApp.selectPayment(this, 'JazzCash')">JazzCash</div>
+                <div class="pay-btn" onclick="LuminaApp.selectPayment(this, 'UPaisa/Load')">Ufone Load</div>
+                <div class="pay-btn" onclick="LuminaApp.selectPayment(this, 'Card')">Debit Card</div>
+            </div>
+
+            <button class="checkout-btn" onclick="LuminaApp.processPayment()"><i class="fa-solid fa-lock"></i> PROCEED TO PAY</button>
+            <button class="close-store-btn" onclick="LuminaApp.closeCoinStore()">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- AUDIO EFFECT -->
+    <audio id="startRhythm" src="https://actions.google.com/sounds/v1/science_fiction/scifi_laser_synth.ogg" preload="auto"></audio>
+
+    <!-- SAFE JAVASCRIPT SCOPE -->
+    <script>
+        // Firebase Initialization Check
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        window.LuminaApp = (function() {
+            let userWallet = {
+                coins: parseFloat(localStorage.getItem('lumina_coins')) || 0.0,
+                adsWatchedToday: parseInt(localStorage.getItem('lumina_ads_today')) || 0,
+                lastAdDate: localStorage.getItem('lumina_ad_date') || new Date().toDateString()
+            };
+
+            let selectedPkg = { name: 'Daily Economy', price: 100, coins: 10 };
+            let selectedPayMethod = 'EasyPaisa';
+            let currentMediaTab = 'video';
+
+            const RESTRICTED_TERMS = ["naked", "nudity", "sex", "explicit", "undress", "bikini", "adult", "erotic"];
+
+            function isUnsafe(text) {
+                if(!text) return false;
+                const lower = text.toLowerCase();
+                return RESTRICTED_TERMS.some(word => lower.includes(word));
+            }
+
+            function checkDailyReset() {
+                let today = new Date().toDateString();
+                if (userWallet.lastAdDate !== today) {
+                    userWallet.adsWatchedToday = 0;
+                    userWallet.lastAdDate = today;
+                    saveWalletState();
+                }
+            }
+
+            function saveWalletState() {
+                localStorage.setItem('lumina_coins', userWallet.coins);
+                localStorage.setItem('lumina_ads_today', userWallet.adsWatchedToday);
+                localStorage.setItem('lumina_ad_date', userWallet.lastAdDate);
+            }
+
+            function updateUI() {
+                const el = document.getElementById('userCoinBalance');
+                if(el) el.innerText = userWallet.coins.toFixed(1);
+            }
+
+            return {
+                init: function() {
+                    checkDailyReset();
+                    updateUI();
+                    const audio = document.getElementById('startRhythm');
+                    if(audio) {
+                        audio.volume = 0.2;
+                        audio.play().catch(() => {});
+                    }
+                },
+                loginWithGoogle: function() {
+                    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) {
+                        const provider = new firebase.auth.GoogleAuthProvider();
+                        firebase.auth().signInWithPopup(provider)
+                            .then((result) => {
+                                alert("Logged in as " + result.user.displayName);
+                                this.loginAsGuest();
+                            })
+                            .catch((error) => {
+                                alert("Google Auth Error: " + error.message);
+                            });
+                    } else {
+                        alert("Firebase credentials missing. Continuing as guest.");
+                        this.loginAsGuest();
+                    }
+                },
+                loginAsGuest: function() {
+                    let el = document.getElementById('loginScreen');
+                    if(el) el.classList.add('hidden');
+                },
+                openModule: function(id) {
+                    let mod = document.getElementById(id);
+                    if(mod) mod.classList.add('active');
+                },
+                closeModule: function(id) {
+                    let mod = document.getElementById(id);
+                    if(mod) mod.classList.remove('active');
+                },
+                openCoinStore: function() {
+                    let el = document.getElementById('coinStoreModal');
+                    if(el) el.classList.add('active');
+                },
+                closeCoinStore: function() {
+                    let el = document.getElementById('coinStoreModal');
+                    if(el) el.classList.remove('active');
+                },
+                switchMediaMode: function(mode) {
+                    currentMediaTab = mode;
+                    document.getElementById('btnVidTab').classList.toggle('active', mode === 'video');
+                    document.getElementById('btnImgTab').classList.toggle('active', mode === 'image');
+                },
+                buildMovieProject: function() {
+                    const prompt = document.getElementById('moviePromptText').value;
+                    if (isUnsafe(prompt)) {
+                        alert("⚠️ Safety Guard Active: NSFW or explicit prompts are strictly prohibited.");
+                        return;
+                    }
+                    if(!prompt) {
+                        alert("Please enter a movie storyline prompt!");
+                        return;
+                    }
+                    alert("🎬 9D Movie Project Initialized! Orchestrating Scene Sequence & BGM...");
+                },
+                generateMediaContent: function() {
+                    const prompt = document.getElementById('mediaPromptText').value;
+                    if (isUnsafe(prompt)) {
+                        alert("⚠️ Safety Guard Active: NSFW or explicit prompts are strictly prohibited.");
+                        return;
+                    }
+                    if(!prompt) {
+                        alert("Please enter a prompt!");
+                        return;
+                    }
+                    alert(`✨ Generating ${currentMediaTab.toUpperCase()} content...`);
+                },
+                selectPackage: function(el, name, price, coins) {
+                    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('selected'));
+                    if(el) el.classList.add('selected');
+                    selectedPkg = { name, price, coins };
+                },
+                selectPayment: function(el, method) {
+                    document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+                    if(el) el.classList.add('selected');
+                    selectedPayMethod = method;
+                },
+                processPayment: function() {
+                    alert(`[GATEWAY]\nRedirecting to ${selectedPayMethod} for PKR ${selectedPkg.price}.`);
+                    userWallet.coins += selectedPkg.coins;
+                    saveWalletState();
+                    updateUI();
+                    this.closeCoinStore();
+                },
+                watchAdForCoin: function() {
+                    checkDailyReset();
+                    if (userWallet.adsWatchedToday >= 3) {
+                        alert("Daily Free Ads Limit Reached (3 Ads). Please Buy Package!");
+                        this.openCoinStore();
+                        return;
+                    }
+                    if (window.AndroidBridge && window.AndroidBridge.triggerRewardedAd) {
+                        window.AndroidBridge.triggerRewardedAd();
+                    } else {
+                        alert("▶ [AdMob Rewarded Video Playing...]");
+                        setTimeout(() => {
+                            userWallet.coins += 1.0;
+                            userWallet.adsWatchedToday += 1;
+                            saveWalletState();
+                            updateUI();
+                        }, 1000);
+                    }
+                },
+                startMonetizedCall: function(name, coinCost) {
+                    alert(`📞 Redirecting to WhatsApp HD Call for ${name}...`);
+                    window.open(`https://wa.me/?text=Hey%20${encodeURIComponent(name)},%20let's%20connect!`, '_blank');
+                },
+                triggerStatusSaverAd: function() {
+                    alert("▶ [AdMob Interstitial Ad Loaded]");
+                }
+            };
+        })();
+
+        window.onload = function() {
+            LuminaApp.init();
+        };
+    </script>
+</body>
+</html>
 
