@@ -47,7 +47,6 @@ fun LoginScreen(
     onContinueAsGuest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Outer Box with FillMaxSize to ensure vertical center alignment
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -79,24 +78,14 @@ fun LoginScreen(
                     .padding(3.dp),
                 contentAlignment = Alignment.Center
             ) {
-                try {
-                    Image(
-                        painter = painterResource(id = R.drawable.lumina_logo),
-                        contentDescription = "Lumina 9D Logo",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(18.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                } catch (e: Exception) {
-                    // Fallback Icon if logo drawable fails to load
-                    Icon(
-                        imageVector = Icons.Default.Security,
-                        contentDescription = "Fallback Logo",
-                        tint = LuminaCyan,
-                        modifier = Modifier.size(48.dp)
-                    )
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.lumina_logo),
+                    contentDescription = "Lumina 9D Logo",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(18.dp)),
+                    contentScale = ContentScale.Crop
+                )
             }
 
             Spacer(modifier = Modifier.height(18.dp))
