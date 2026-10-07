@@ -40,7 +40,6 @@ import com.example.ui.theme.LuminaBackground
 import com.example.ui.theme.LuminaCyan
 import com.example.ui.theme.LuminaSurface
 import com.example.ui.theme.LuminaTextMuted
-import com.example.ui.theme.LuminaTextSecondary
 
 @Composable
 fun LoginScreen(
@@ -48,6 +47,7 @@ fun LoginScreen(
     onContinueAsGuest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Outer Box with FillMaxSize to ensure vertical center alignment
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -65,7 +65,9 @@ fun LoginScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
         ) {
             // Glowing Logo Container
             Box(
@@ -77,14 +79,24 @@ fun LoginScreen(
                     .padding(3.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.lumina_logo),
-                    contentDescription = "Lumina 9D Logo",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(18.dp)),
-                    contentScale = ContentScale.Crop
-                )
+                try {
+                    Image(
+                        painter = painterResource(id = R.drawable.lumina_logo),
+                        contentDescription = "Lumina 9D Logo",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(18.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                } catch (e: Exception) {
+                    // Fallback Icon if logo drawable fails to load
+                    Icon(
+                        imageVector = Icons.Default.Security,
+                        contentDescription = "Fallback Logo",
+                        tint = LuminaCyan,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -93,43 +105,43 @@ fun LoginScreen(
             Text(
                 text = "LUMINA AI",
                 color = LuminaCyan,
-                fontSize = 20.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Black,
                 letterSpacing = 2.sp,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = "AI MOVIE MAKER & 9D SUITE",
                 color = LuminaTextMuted,
-                fontSize = 9.sp,
+                fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 1.2.sp,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(36.dp))
 
             // Login Box
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(0.85f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(LuminaSurface.copy(alpha = 0.75f))
-                    .border(BorderStroke(1.dp, LuminaCyan.copy(alpha = 0.4f)), RoundedCornerShape(12.dp))
-                    .padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .fillMaxWidth(0.9f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(LuminaSurface.copy(alpha = 0.85f))
+                    .border(BorderStroke(1.dp, LuminaCyan.copy(alpha = 0.4f)), RoundedCornerShape(16.dp))
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 // Login With Google
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .background(Color(0xFFEA4335))
                         .clickable { onLoginWithGoogle() }
-                        .padding(vertical = 12.dp)
+                        .padding(vertical = 14.dp)
                         .testTag("login_google_button"),
                     contentAlignment = Alignment.Center
                 ) {
@@ -141,13 +153,13 @@ fun LoginScreen(
                             imageVector = Icons.Default.Email,
                             contentDescription = "Google",
                             tint = Color.White,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "LOGIN WITH GMAIL",
                             color = Color.White,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.8.sp
                         )
@@ -158,11 +170,11 @@ fun LoginScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(10.dp))
                         .background(LuminaCyan.copy(alpha = 0.15f))
-                        .border(1.dp, LuminaCyan, RoundedCornerShape(8.dp))
+                        .border(1.dp, LuminaCyan, RoundedCornerShape(10.dp))
                         .clickable { onContinueAsGuest() }
-                        .padding(vertical = 12.dp)
+                        .padding(vertical = 14.dp)
                         .testTag("login_guest_button"),
                     contentAlignment = Alignment.Center
                 ) {
@@ -174,13 +186,13 @@ fun LoginScreen(
                             imageVector = Icons.Default.Security,
                             contentDescription = "Guest",
                             tint = LuminaCyan,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "CONTINUE AS GUEST",
                             color = LuminaCyan,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.8.sp
                         )
