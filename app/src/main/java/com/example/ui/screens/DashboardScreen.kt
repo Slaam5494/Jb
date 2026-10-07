@@ -225,15 +225,19 @@ fun ModuleCard(
             .clickable { onClick() }
             .testTag(testTag)
     ) {
-        // Background Image with cyber transparency
+        // Safe Background Image loading to avoid black screen crash
         if (imageRes != null) {
-            Image(
-                painter = painterResource(id = imageRes),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                alpha = 0.32f
-            )
+            try {
+                Image(
+                    painter = painterResource(id = imageRes),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    alpha = 0.32f
+                )
+            } catch (e: Exception) {
+                // Fallback: Continue without background image if resource is missing
+            }
         }
 
         // Card Content
